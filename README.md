@@ -1,6 +1,6 @@
 # 🚀 Impulso Criativo IA
 
-<img src="https://imgur.com/a/saas-neg-cios-thumbnail-ym1B7Lu" alt="Impulso Criativo IA - Inteligência Artificial e Marketing Digital" style="width:100%;max-width:700px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.07);margin-bottom:32px;">
+<img src="https://images.pexels.com/photos/7176319/pexels-photo-7176319.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Impulso Criativo IA - Inteligência Artificial e Marketing Digital" style="width:100%;max-width:700px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.07);margin-bottom:32px;">
 
 Gere anúncios de alta performance em segundos com o poder da Inteligência Artificial.
 
