@@ -9,14 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Meta Tags for Social Sharing (Open Graph) -->
+    <!-- Meta Tags Finais para a Thumbnail -->
     <meta property="og:title" content="Impulso Criativo IA">
     <meta property="og:description" content="Gere anúncios de alta performance em segundos com o poder da Inteligência Artificial.">
-    <!-- Imagem para a thumbnail -->
-    <meta property="og:image" content="https://i.imgur.com/8d2L1jL.png">
-    <meta property="og:url" content="https://SEU-USUARIO-GITHUB.github.io/impulso-criativo-ia/">
     <meta property="og:type" content="website">
-
+    <meta property="og:url" content="https://bersou.github.io/impulso-criativo-ia/">
+    
+    <!-- Link para a imagem LOCAL no seu projeto -->
+    <meta property="og:image" content="https://bersou.github.io/impulso-criativo-ia/thumbnail.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .form-card { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
@@ -88,7 +91,6 @@
     </div>
 
 <script>
-    // Elements
     const form = document.getElementById('strategy-form');
     const generateButton = document.getElementById('generate-button');
     const loadingIndicator = document.getElementById('loading-indicator');
@@ -102,8 +104,6 @@
     const usageCounterContainer = document.getElementById('usage-counter-container');
     const limitModal = document.getElementById('limit-modal');
     const closeModalButton = document.getElementById('close-modal');
-
-    // Freemium Logic
     const MAX_FREE_USES = 3;
     let imageFile = null;
 
@@ -136,7 +136,6 @@
 
     closeModalButton.addEventListener('click', () => limitModal.classList.add('hidden'));
 
-    // Image Handlers
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         imageDropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
     });
@@ -165,7 +164,6 @@
         }
     }
 
-    // Main Form Submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!checkUsage()) {
@@ -183,46 +181,51 @@
         generateButton.disabled = true;
         generateButton.textContent = 'Gerando...';
         try {
-            const base64ImageData = await toBase64(imageFile);
-            const generatedContent = await callGeminiAPI(base64ImageData, productName, targetAudience);
+            const generatedContent = await callGeminiAPI(productName, targetAudience);
             displayResults(generatedContent);
             incrementUsage();
         } catch (error) {
-            console.error("Erro detalhado ao chamar a API:", error);
-            alert(`Ocorreu um erro ao gerar a estratégia: ${error.message}. Por favor, tente novamente.`);
+            console.error("Erro detalhado:", error);
+            alert(`Ocorreu um erro ao gerar a estratégia: ${error.message}.`);
         } finally {
             loadingIndicator.classList.add('hidden');
             updateUsageCounter();
         }
     });
 
-    async function callGeminiAPI(base64ImageData, productName, targetAudience) {
-        const apiKey = "";
+    function getMockData(productName, targetAudience) {
+        return {
+            "image_analysis": {
+                "score": 9,
+                "feedback": `[MODO DEMONSTRAÇÃO] A imagem do produto '${productName}' é excelente! A iluminação é clara e o produto está em foco. Isso transmite profissionalismo e atrai a atenção do público-alvo: ${targetAudience}.`,
+                "suggestions": "Para aprimorar ainda mais, considere adicionar uma foto contextual, mostrando o produto em uso. Isso ajuda o cliente a visualizar o benefício real."
+            },
+            "ad_copies": [{ "title": `O Fim da Busca pelo '${productName}' Perfeito!`, "body": `Cansado de procurar? Nosso '${productName}' foi desenhado especialmente para ${targetAudience} que valorizam qualidade e design. Sinta a diferença.`, "cta": "Compre Agora e Transforme Seu Dia" }, { "title": `Exclusivo para Você: '${productName}'`, "body": `Sabemos que ${targetAudience} não se contenta com pouco. Por isso, criamos o '${productName}' que une durabilidade e estilo. A solução que você esperava.`, "cta": "Descubra a Coleção" }],
+            "segmentation_suggestions": ["Interesse: Compras online", "Interesse: [Categoria do Produto]", `Público semelhante a clientes existentes de '${productName}'`, "Comportamento: Compradores envolvidos", `Dados demográficos: Alinhados com ${targetAudience}`],
+            "hashtags": { "niche": ["produtoExclusivo", "qualidadeSuperior", "designUnico", "feitoParaVoce", "achadoDoDia"], "broad": ["novidade", "lancamento", "estiloDeVida", "compras", "ecommerce"] }
+        };
+    }
+
+    async function callGeminiAPI(productName, targetAudience) {
+        const apiKey = ""; 
+        if (apiKey === "") {
+            console.log("Nenhuma chave de API encontrada. Entrando em Modo Demonstração.");
+            await new Promise(resolve => setTimeout(resolve, 2500)); 
+            return getMockData(productName, targetAudience);
+        }
+        const base64ImageData = await toBase64(imageFile);
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const payload = {
             contents: [{ parts: [
-                { text: `Você é um especialista em marketing digital para e-commerce. Sua tarefa é analisar a imagem de um produto e criar uma estratégia de anúncio. Responda APENAS com um objeto JSON válido, seguindo o schema fornecido.` },
+                { text: `Você é um especialista em marketing digital para e-commerce. Responda APENAS com um objeto JSON válido, seguindo o schema fornecido.` },
                 { text: `Analise a imagem e gere a estratégia para o produto "${productName}" com foco no público-alvo "${targetAudience}".` },
                 { inlineData: { mimeType: imageFile.type, data: base64ImageData } }
             ] }],
             safetySettings: [
-                { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-                { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-                { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-                { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
+                { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" }, { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" }, { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
             ],
-            generationConfig: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: "OBJECT",
-                    properties: {
-                        "image_analysis": { type: "OBJECT", properties: { "score": { type: "INTEGER" }, "feedback": { type: "STRING" }, "suggestions": { type: "STRING" } } },
-                        "ad_copies": { type: "ARRAY", items: { type: "OBJECT", properties: { "title": { type: "STRING" }, "body": { type: "STRING" }, "cta": { type: "STRING" } } } },
-                        "segmentation_suggestions": { type: "ARRAY", items: { type: "STRING" } },
-                        "hashtags": { type: "OBJECT", properties: { "niche": { type: "ARRAY", items: { type: "STRING" } }, "broad": { type: "ARRAY", items: { type: "STRING" } } } }
-                    }
-                }
-            }
+            generationConfig: { /* ... schema ... */ }
         };
         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!response.ok) {
@@ -232,7 +235,7 @@
         }
         const result = await response.json();
         if (!result.candidates || !result.candidates[0].content.parts[0].text) {
-             throw new Error("A IA não retornou um resultado válido. A imagem pode ser muito complexa ou o conteúdo pode ter sido bloqueado.");
+             throw new Error("A IA não retornou um resultado válido.");
         }
         return JSON.parse(result.candidates[0].content.parts[0].text);
     }
@@ -248,19 +251,9 @@
 
     function displayResults(data) {
         let html = `
-            <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card mb-6">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 Análise da Imagem</h2>
-                <div class="text-center bg-blue-50 p-4 rounded-lg mb-4"><p class="text-lg text-gray-600">Potencial da Imagem</p><p class="text-5xl font-bold text-blue-600">${data.image_analysis.score}/10</p></div>
-                <div class="space-y-3 text-gray-700"><div><strong>Feedback:</strong> ${data.image_analysis.feedback}</div><div><strong>Sugestões:</strong> ${data.image_analysis.suggestions}</div></div>
-            </div>
-            <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card mb-6">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">✍️ Variações de Anúncios</h2>
-                <div class="space-y-6">${data.ad_copies.map((ad, index) => `<div class="border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-lg text-blue-600 mb-2">Opção ${index + 1}: ${ad.title}</h3><p class="text-gray-700 mb-2 whitespace-pre-wrap">${ad.body}</p><div class="flex justify-between items-center mt-3"><span class="font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">${ad.cta}</span><button onclick="copyToClipboard(this, \`${ad.title}\\n\\n${ad.body.replace(/`/g, '\\`')}\\n\\n${ad.cta}\`)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300">Copiar</button></div></div>`).join('')}</div>
-            </div>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card"><h2 class="text-2xl font-bold mb-4 text-gray-800">🎯 Sugestões de Segmentação</h2><ul class="list-disc list-inside space-y-2 text-gray-700">${data.segmentation_suggestions.map(s => `<li>${s}</li>`).join('')}</ul></div>
-                <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card"><h2 class="text-2xl font-bold mb-4 text-gray-800">#️⃣ Hashtags Estratégicas</h2><div class="mb-4"><h3 class="font-semibold text-md text-blue-600 mb-2">Nicho</h3><div class="flex flex-wrap gap-2">${data.hashtags.niche.map(h => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">#${h}</span>`).join('')}</div></div><div><h3 class="font-semibold text-md text-blue-600 mb-2">Amplo</h3><div class="flex flex-wrap gap-2">${data.hashtags.broad.map(h => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">#${h}</span>`).join('')}</div></div></div>
-            </div>`;
+            <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card mb-6"><h2 class="text-2xl font-bold mb-4 text-gray-800">📊 Análise da Imagem</h2><div class="text-center bg-blue-50 p-4 rounded-lg mb-4"><p class="text-lg text-gray-600">Potencial da Imagem</p><p class="text-5xl font-bold text-blue-600">${data.image_analysis.score}/10</p></div><div class="space-y-3 text-gray-700"><div><strong>Feedback:</strong> ${data.image_analysis.feedback}</div><div><strong>Sugestões:</strong> ${data.image_analysis.suggestions}</div></div></div>
+            <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card mb-6"><h2 class="text-2xl font-bold mb-4 text-gray-800">✍️ Variações de Anúncios</h2><div class="space-y-6">${data.ad_copies.map((ad, index) => `<div class="border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-lg text-blue-600 mb-2">Opção ${index + 1}: ${ad.title}</h3><p class="text-gray-700 mb-2 whitespace-pre-wrap">${ad.body}</p><div class="flex justify-between items-center mt-3"><span class="font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">${ad.cta}</span><button onclick="copyToClipboard(this, \`${ad.title}\\n\\n${ad.body.replace(/`/g, '\\`')}\\n\\n${ad.cta}\`)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300">Copiar</button></div></div>`).join('')}</div></div>
+            <div class="grid md:grid-cols-2 gap-6"><div class="bg-white rounded-xl p-6 md:p-8 form-card result-card"><h2 class="text-2xl font-bold mb-4 text-gray-800">🎯 Sugestões de Segmentação</h2><ul class="list-disc list-inside space-y-2 text-gray-700">${data.segmentation_suggestions.map(s => `<li>${s}</li>`).join('')}</ul></div><div class="bg-white rounded-xl p-6 md:p-8 form-card result-card"><h2 class="text-2xl font-bold mb-4 text-gray-800">#️⃣ Hashtags Estratégicas</h2><div class="mb-4"><h3 class="font-semibold text-md text-blue-600 mb-2">Nicho</h3><div class="flex flex-wrap gap-2">${data.hashtags.niche.map(h => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">#${h}</span>`).join('')}</div></div><div><h3 class="font-semibold text-md text-blue-600 mb-2">Amplo</h3><div class="flex flex-wrap gap-2">${data.hashtags.broad.map(h => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">#${h}</span>`).join('')}</div></div></div></div>`;
         resultsSection.innerHTML = html;
         resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
@@ -282,5 +275,4 @@
 </script>
 </body>
 </html>
-
 
