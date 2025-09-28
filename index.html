@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impulso Criativo IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Meta Tags for Social Sharing (Open Graph) -->
+    <meta property="og:title" content="Impulso Criativo IA">
+    <meta property="og:description" content="Gere anúncios de alta performance em segundos com o poder da Inteligência Artificial.">
+    <!-- Imagem para a thumbnail -->
+    <meta property="og:image" content="https://i.imgur.com/8d2L1jL.png">
+    <meta property="og:url" content="https://SEU-USUARIO-GITHUB.github.io/impulso-criativo-ia/">
+    <meta property="og:type" content="website">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .form-card { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .result-card { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Impulso Criativo <span class="text-blue-600">IA</span></h1>
+            <p class="mt-2 text-lg text-gray-600">Anúncios de alta performance criados por Inteligência Artificial</p>
+            <div id="usage-counter-container" class="mt-4"></div>
+        </header>
+
+        <main class="w-full max-w-2xl">
+            <div class="bg-white rounded-xl p-6 md:p-8 form-card">
+                <form id="strategy-form">
+                    <div class="mb-6">
+                        <label class="block text-lg font-semibold mb-2 text-gray-700">1. Imagem do Produto</label>
+                        <div id="image-drop-area" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                            <input type="file" id="image-upload" accept="image/*" class="hidden">
+                            <p id="image-drop-text" class="text-gray-500">Arraste e solte uma imagem aqui, ou clique para selecionar</p>
+                            <div id="image-preview-container" class="hidden mt-4">
+                                <img id="image-preview" src="#" alt="Pré-visualização da imagem" class="max-h-40 mx-auto rounded-md"/>
+                                <p id="image-filename" class="text-sm text-gray-600 mt-2"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="product-name" class="block text-lg font-semibold mb-2 text-gray-700">2. Nome do Produto</label>
+                            <input type="text" id="product-name" placeholder="Ex: Tênis de Corrida UltraLeve" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                        </div>
+                        <div>
+                            <label for="target-audience" class="block text-lg font-semibold mb-2 text-gray-700">3. Público-Alvo</label>
+                            <input type="text" id="target-audience" placeholder="Ex: Corredores amadores" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                        </div>
+                    </div>
+                    <button type="submit" id="generate-button" class="w-full bg-blue-600 text-white font-bold py-4 px-4 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Gerar Estratégia de Anúncio
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <div id="loading-indicator" class="hidden text-center my-8">
+            <div class="loader mx-auto"></div>
+            <p class="mt-4 text-lg font-semibold text-gray-600">Analisando e criando... A IA está trabalhando para você!</p>
+        </div>
+
+        <div id="results-section" class="w-full max-w-3xl mt-10"></div>
+        
+        <footer class="text-center mt-12 text-gray-500">
+            <p>Gostou da ferramenta? <a href="https://forms.gle/33WbyTmTLW5bnF4z7" target="_blank" class="text-blue-600 hover:underline">Clique aqui para entrar na lista de espera!</a></p>
+        </footer>
+    </div>
+    
+    <div id="limit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4">Limite Atingido!</h2>
+            <p class="text-gray-600 mb-6">Você utilizou todas as suas análises gratuitas. Entre na nossa lista de espera para saber sobre o lançamento dos planos!</p>
+            <a href="https://forms.gle/33WbyTmTLW5bnF4z7" target="_blank" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 inline-block">Entrar na Lista de Espera</a>
+            <button id="close-modal" class="mt-4 text-gray-500 hover:text-gray-700">Fechar</button>
+        </div>
+    </div>
+
+<script>
+    // Elements
+    const form = document.getElementById('strategy-form');
+    const generateButton = document.getElementById('generate-button');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const resultsSection = document.getElementById('results-section');
+    const imageUpload = document.getElementById('image-upload');
+    const imageDropArea = document.getElementById('image-drop-area');
+    const imageDropText = document.getElementById('image-drop-text');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const imageFilename = document.getElementById('image-filename');
+    const usageCounterContainer = document.getElementById('usage-counter-container');
+    const limitModal = document.getElementById('limit-modal');
+    const closeModalButton = document.getElementById('close-modal');
+
+    // Freemium Logic
+    const MAX_FREE_USES = 3;
+    let imageFile = null;
+
+    function updateUsageCounter() {
+        const currentUses = parseInt(localStorage.getItem('impulseCreativeUses') || '0');
+        const remaining = MAX_FREE_USES - currentUses;
+        if (remaining > 0) {
+            usageCounterContainer.innerHTML = `<p class="text-sm bg-blue-100 text-blue-700 rounded-full px-4 py-1 inline-block">Você tem <strong>${remaining} de ${MAX_FREE_USES}</strong> análises gratuitas restantes.</p>`;
+            generateButton.disabled = false;
+            generateButton.textContent = 'Gerar Estratégia de Anúncio';
+            generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            usageCounterContainer.innerHTML = `<p class="text-sm bg-red-100 text-red-700 rounded-full px-4 py-1 inline-block">Suas análises gratuitas acabaram.</p>`;
+            generateButton.disabled = true;
+            generateButton.textContent = 'Limite Gratuito Atingido';
+            generateButton.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    function checkUsage() {
+        const currentUses = parseInt(localStorage.getItem('impulseCreativeUses') || '0');
+        return currentUses < MAX_FREE_USES;
+    }
+
+    function incrementUsage() {
+        let currentUses = parseInt(localStorage.getItem('impulseCreativeUses') || '0');
+        localStorage.setItem('impulseCreativeUses', ++currentUses);
+        updateUsageCounter();
+    }
+
+    closeModalButton.addEventListener('click', () => limitModal.classList.add('hidden'));
+
+    // Image Handlers
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        imageDropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    imageDropArea.addEventListener('dragenter', () => imageDropArea.classList.add('bg-gray-100'));
+    imageDropArea.addEventListener('dragleave', () => imageDropArea.classList.remove('bg-gray-100'));
+    imageDropArea.addEventListener('drop', e => {
+        imageFile = e.dataTransfer.files[0];
+        displayImagePreview(imageFile);
+    }, false);
+    imageDropArea.addEventListener('click', () => imageUpload.click());
+    imageUpload.addEventListener('change', (e) => {
+        imageFile = e.target.files[0];
+        displayImagePreview(imageFile);
+    });
+
+    function displayImagePreview(file) {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.classList.remove('hidden');
+                imageFilename.textContent = `Arquivo: ${file.name}`;
+                imageDropText.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Main Form Submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!checkUsage()) {
+            limitModal.classList.remove('hidden');
+            return;
+        }
+        const productName = document.getElementById('product-name').value;
+        const targetAudience = document.getElementById('target-audience').value;
+        if (!imageFile || !productName || !targetAudience) {
+            alert('Por favor, preencha todos os campos e selecione uma imagem.');
+            return;
+        }
+        loadingIndicator.classList.remove('hidden');
+        resultsSection.innerHTML = '';
+        generateButton.disabled = true;
+        generateButton.textContent = 'Gerando...';
+        try {
+            const base64ImageData = await toBase64(imageFile);
+            const generatedContent = await callGeminiAPI(base64ImageData, productName, targetAudience);
+            displayResults(generatedContent);
+            incrementUsage();
+        } catch (error) {
+            console.error("Erro detalhado ao chamar a API:", error);
+            alert(`Ocorreu um erro ao gerar a estratégia: ${error.message}. Por favor, tente novamente.`);
+        } finally {
+            loadingIndicator.classList.add('hidden');
+            updateUsageCounter();
+        }
+    });
+
+    async function callGeminiAPI(base64ImageData, productName, targetAudience) {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{ parts: [
+                { text: `Você é um especialista em marketing digital para e-commerce. Sua tarefa é analisar a imagem de um produto e criar uma estratégia de anúncio. Responda APENAS com um objeto JSON válido, seguindo o schema fornecido.` },
+                { text: `Analise a imagem e gere a estratégia para o produto "${productName}" com foco no público-alvo "${targetAudience}".` },
+                { inlineData: { mimeType: imageFile.type, data: base64ImageData } }
+            ] }],
+            safetySettings: [
+                { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
+            ],
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        "image_analysis": { type: "OBJECT", properties: { "score": { type: "INTEGER" }, "feedback": { type: "STRING" }, "suggestions": { type: "STRING" } } },
+                        "ad_copies": { type: "ARRAY", items: { type: "OBJECT", properties: { "title": { type: "STRING" }, "body": { type: "STRING" }, "cta": { type: "STRING" } } } },
+                        "segmentation_suggestions": { type: "ARRAY", items: { type: "STRING" } },
+                        "hashtags": { type: "OBJECT", properties: { "niche": { type: "ARRAY", items: { type: "STRING" } }, "broad": { type: "ARRAY", items: { type: "STRING" } } } }
+                    }
+                }
+            }
+        };
+        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({ error: { message: "Resposta da API inválida." } }));
+            console.error("API Error Body:", errorBody);
+            throw new Error(errorBody.error?.message || `Erro na API: ${response.status}`);
+        }
+        const result = await response.json();
+        if (!result.candidates || !result.candidates[0].content.parts[0].text) {
+             throw new Error("A IA não retornou um resultado válido. A imagem pode ser muito complexa ou o conteúdo pode ter sido bloqueado.");
+        }
+        return JSON.parse(result.candidates[0].content.parts[0].text);
+    }
+
+    function toBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    function displayResults(data) {
+        let html = `
+            <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 Análise da Imagem</h2>
+                <div class="text-center bg-blue-50 p-4 rounded-lg mb-4"><p class="text-lg text-gray-600">Potencial da Imagem</p><p class="text-5xl font-bold text-blue-600">${data.image_analysis.score}/10</p></div>
+                <div class="space-y-3 text-gray-700"><div><strong>Feedback:</strong> ${data.image_analysis.feedback}</div><div><strong>Sugestões:</strong> ${data.image_analysis.suggestions}</div></div>
+            </div>
+            <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">✍️ Variações de Anúncios</h2>
+                <div class="space-y-6">${data.ad_copies.map((ad, index) => `<div class="border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-lg text-blue-600 mb-2">Opção ${index + 1}: ${ad.title}</h3><p class="text-gray-700 mb-2 whitespace-pre-wrap">${ad.body}</p><div class="flex justify-between items-center mt-3"><span class="font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">${ad.cta}</span><button onclick="copyToClipboard(this, \`${ad.title}\\n\\n${ad.body.replace(/`/g, '\\`')}\\n\\n${ad.cta}\`)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300">Copiar</button></div></div>`).join('')}</div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card"><h2 class="text-2xl font-bold mb-4 text-gray-800">🎯 Sugestões de Segmentação</h2><ul class="list-disc list-inside space-y-2 text-gray-700">${data.segmentation_suggestions.map(s => `<li>${s}</li>`).join('')}</ul></div>
+                <div class="bg-white rounded-xl p-6 md:p-8 form-card result-card"><h2 class="text-2xl font-bold mb-4 text-gray-800">#️⃣ Hashtags Estratégicas</h2><div class="mb-4"><h3 class="font-semibold text-md text-blue-600 mb-2">Nicho</h3><div class="flex flex-wrap gap-2">${data.hashtags.niche.map(h => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">#${h}</span>`).join('')}</div></div><div><h3 class="font-semibold text-md text-blue-600 mb-2">Amplo</h3><div class="flex flex-wrap gap-2">${data.hashtags.broad.map(h => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">#${h}</span>`).join('')}</div></div></div>
+            </div>`;
+        resultsSection.innerHTML = html;
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyToClipboard(button, text) {
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = text;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        try {
+            document.execCommand('copy');
+            button.textContent = 'Copiado!';
+            setTimeout(() => { button.textContent = 'Copiar'; }, 2000);
+        } catch (err) { console.error('Falha ao copiar texto: ', err); }
+        document.body.removeChild(tempTextArea);
+    }
+    
+    document.addEventListener('DOMContentLoaded', updateUsageCounter);
+</script>
+</body>
+</html>
+
+
