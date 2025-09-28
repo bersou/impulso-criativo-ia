@@ -1,6 +1,6 @@
 # 🚀 Impulso Criativo IA
 
-<img src="https://iili.io/KEKp3fj.jpg" alt="Impulso Criativo IA - Inteligência Artificial e Marketing Digital">
+<img src="https://images.pexels.com/photos/34077856/pexels-photo-34077856.jpeg" alt="Impulso Criativo IA - Inteligência Artificial e Marketing Digital">
 
 Gere anúncios de alta performance em segundos com o poder da Inteligência Artificial.
 
