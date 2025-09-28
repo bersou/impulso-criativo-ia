@@ -26,7 +26,6 @@ Impulso Criativo IA é um **Micro-SaaS** desenvolvido para ajudar donos de e-com
 - **CSS3 com Tailwind CSS:** Estilização moderna e responsiva, com framework utility-first.
 - **JavaScript (Vanilla):** Interatividade, manipulação do DOM e lógica do modelo freemium.
 - **API do Google Gemini (IA):** Análise de imagem e criação de copy, segmentação e hashtags.
-- **Vercel:** Plataforma de deploy para hospedagem e distribuição global.
 
 ---
 
